@@ -57,12 +57,8 @@ public class DaysCalculator {
     private long numberOfDaysFromTheBeginningOfGivenYear(Date date, int year){
         long daysBeforeYearStart = IntStream.range(year, date.getYear())
                                         .parallel()
-                                        .mapToLong(y->numberOfDaysInYear(y))
+                                        .mapToLong(this::numberOfDaysInYear)
                                         .sum();
-
-/*                LongStream.range(year, date.getYear())
-                .map(y->numberOfDaysInYear((int)y))
-                .sum();*/
         return daysBeforeYearStart+ numberOfDaysFromTheBeginningOfThisYear(date);
     }
 
@@ -70,7 +66,6 @@ public class DaysCalculator {
         return date.getDay()+ numberOfDaysInThisYearBeforeThisMonth(date.getMonth(),date.getYear());
     }
     private long numberOfDaysInMonth(int month, int year){
-
         switch (month){
             case 1:
             case 3:
@@ -90,33 +85,14 @@ public class DaysCalculator {
             default:
                 throw new IllegalArgumentException("month number is incorrect");
         }
-
-
-/*        if(month== 1 || month==3 || month==5 || month==7 ||month==8||month==10||month==12){
-            return 31;
-        }else if(month==4||month==6||month==9||month==11){
-            return 30;
-        }else if(month==2){
-            return isLeapYear(year)? 29 : 28;
-        }else {
-            throw new IllegalArgumentException("month number is incorrect");
-        }*/
     }
 
     private long numberOfDaysInYear(int year){
-        if(isLeapYear(year)){
-            return 366;
-        }else {
-            return 365;
-        }
+        return isLeapYear(year)?366:365;
     }
 
     private long numberOfDaysInThisYearBeforeThisMonth(int month,int year){
         //calculating number of days before this month start
-/*        return LongStream.range(1,month)
-                .map(m -> numberOfDaysInMonth((int) m,year))
-                .sum();*/
-
         return IntStream.range(1,month).parallel()
                 .mapToLong(i->numberOfDaysInMonth(i,year))
                 .sum();
